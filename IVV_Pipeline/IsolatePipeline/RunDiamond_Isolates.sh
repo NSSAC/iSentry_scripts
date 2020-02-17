@@ -1,11 +1,11 @@
 #Run diamond against a card and vfdb database
 
+#Diamond databases for card and vfdb
+cardDB="/project/biocomplexity/isentry/ref_data/card/card_protein_variant_DB.dmnd"
+vfdbDB="/project/biocomplexity/isentry/ref_data/vfdb/VFDB_protein_DB.dmnd"
+
 #prefix for files
 prefix="isolate"
-
-#Card and vfdb database: default none to ignore them. Pass database in calling file to run them
-cardDB="none"
-vfdb="none"
 
 #Desired headers for diamond output
 dmndHeaders="qseqid sseqid  length  evalue  bitscore    stitle"
@@ -13,13 +13,15 @@ dmndHeaders="qseqid sseqid  length  evalue  bitscore    stitle"
 #Diamond: evalue threshold
 evalue="0.000001"
 file="none"
-while getops "c:v:h:e:i:f:" args: do
+card=0
+vfdb=0
+while getops "cvhei:f:" args: do
     case $arg in 
         c)
-            cardDB=${OPTARG}
+            card=1
             ;;
         v)
-            vfdbDB=${OPTARG}
+            vfdbDB=1
             ;;
         h)
             dmndHeaders=${OPTARG}

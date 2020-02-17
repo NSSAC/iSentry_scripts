@@ -11,7 +11,7 @@ mashHeaders="gene-ID    species  distance   p-value shared-hashes"
 threads="1"
 file="none"
 sample="isolate"
-while getopts "d:m:h:t:f:s:" arg: do
+while getopts "dmtf:s:" arg: do
     case $arg in 
         t)
             threads=${OPTARG}
@@ -21,9 +21,6 @@ while getopts "d:m:h:t:f:s:" arg: do
             ;; 
         m)
             patricMapping=${OPTARG}
-            ;;
-        h)
-            mashHeaders=${OPTARG}
             ;;
         f)
             file=${OPTARG}
