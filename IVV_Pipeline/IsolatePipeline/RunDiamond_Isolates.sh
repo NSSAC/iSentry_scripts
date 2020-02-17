@@ -14,7 +14,7 @@ dmndHeaders="qseqid sseqid  length  evalue  bitscore    stitle"
 evalue="0.000001"
 file="none"
 while getops "c:v:h:e:i:f:" args: do
-    case
+    case $arg in 
         c)
             cardDB=${OPTARG}
             ;;
@@ -32,6 +32,10 @@ while getops "c:v:h:e:i:f:" args: do
             ;;
         f)
             file=${OPTARG}
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" 1>&2
+            exit -1
             ;;
     esac
 done

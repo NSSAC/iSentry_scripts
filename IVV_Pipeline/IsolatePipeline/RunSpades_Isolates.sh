@@ -14,13 +14,18 @@ while getopts "t:f:r:" arg; do
             ;;
         r) 
             file2=${OPTARG}
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" 1>&2
+            exit -1
+            ;;
     esac
 done
 
 #Check for reads file
 if [ $file1 == "none" ] 
 then
-    echo "Must provide at least one reads file: [ -f FILE ]"
+    echo "Must provide at least one reads file: [ -f FILE ]" 1>&2
     exit -1
 fi
 
