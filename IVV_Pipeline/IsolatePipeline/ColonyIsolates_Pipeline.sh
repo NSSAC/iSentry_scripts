@@ -4,7 +4,6 @@ module load diamond
 
 #CHECK REQUIRED PROGRAM PATHS
 check_Mash=$(which mash)
-check_Spades=$(which spades.py)
 
 #Database paths for Diamond and Patric (Mash)
 cardDB="/project/biocomplexity/isentry/ref_data/card/card_protein_variant_DB.dmnd"
@@ -61,11 +60,6 @@ prefix=$outdir"/output"
 #Get forward and reverse read filenames
 f1=$1
 f2=$2
-
-#Run SPAdes to assemble contigs: Assume two files for forward and reverse reads
-spades.py --meta -t $threads -1 $f1 -2 $f2 -o tmp_dir 
-mv tmp_dir/contigs.fasta $outdir
-rm -r tmp_dir
 
 contigs=$outdir"/contigs.fasta"
 
