@@ -6,7 +6,6 @@ module load diamond
 cardDB="/project/biocomplexity/isentry/ref_data/card/card_protein_variant_DB.dmnd"
 vfdbDB="/project/biocomplexity/isentry/ref_data/vfdb/VFDB_protein_DB.dmnd"
 
-
 #Number of threads
 threads="8"
 
@@ -26,8 +25,6 @@ f1=$1
 f2=$2
 
 #runspades
-
-contigs=$outdir"/contigs.fasta"
 
 #Run Diamond: card and vfdb
 

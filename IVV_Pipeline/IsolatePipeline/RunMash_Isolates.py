@@ -14,18 +14,16 @@ args = parser.parse_args()
 outfile = args.sample+".mash_out.txt"
 errfile = args.sample+".mash_err.txt"
 
-#TODO: Mash theshold list implementation
-#mash_threshold = 0.0
-mash_threshold = 0.01
+threshold_list = [0.0,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
+threshold_index = 0
 
 while not os.path.isfile(outfile) or os.path.getsize(outfile) == 0:
+    mash_threshold = threshold_list[threshold_index]
     command = "mash dist -d " + str(mash_threshold) + " -p " + args.threads + " " + args.database + " " + args.filename  
 
     with open(outfile,"w") as out, open(errfile,"w") as err:
         process = subprocess.Popen(command,shell=True,stdout=out,stderr=err)
         process.wait()
 
-    #TODO: implement iteration over ideal mash thresholds
-    #Potentially just a list of values where in index is tracked from the most strict to least strict
     if os.path.getsize(outfile) == 0:
-        mash_threshold = mash_threshold * 2
+        threshold_index = threshold_index + 1
