@@ -5,14 +5,14 @@ module load diamond
 #CHECK REQUIRED PROGRAM PATHS
 check_Mash=$(which mash)
 
-#Database paths for Diamond and Patric (Mash)
-cardDB="/project/biocomplexity/isentry/ref_data/card/card_protein_variant_DB.dmnd"
-vfdbDB="/project/biocomplexity/isentry/ref_data/vfdb/VFDB_protein_DB.dmnd"
+#Database paths for Patric (Mash)
 patricDB="/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
 patricMapping="/project/biocomplexity/isentry/ref_data/mash/patric_genomes_names.txt"
+#Diamond databases for card and vfdb
+cardDB="/project/biocomplexity/isentry/ref_data/card/card_protein_variant_DB.dmnd"
+vfdbDB="/project/biocomplexity/isentry/ref_data/vfdb/VFDB_protein_DB.dmnd"
 
 #Headers for diamond and mash output
-dmndHeaders="qseqid sseqid  length  evalue  bitscore    stitle"
 mashHeaders="gene-ID    species  distance   p-value shared-hashes"
 
 #Number of threads
@@ -21,8 +21,6 @@ threads="8"
 #mash threshold: Sets maximum distance value for output a mash pair
 mash_threshold="0.05"
 
-#Diamond: evalue threshold
-evalue="0.000001"
 
 #Check that database files exists
 if [ ! -f $cardDB ] 
@@ -61,15 +59,11 @@ prefix=$outdir"/output"
 f1=$1
 f2=$2
 
+#runspades
+
 contigs=$outdir"/contigs.fasta"
 
-#Run Diamond: card
-echo $dmndHeaders > $prefix".card"
-diamond blastx --outfmt 6 $dmndHeaders --db $cardDB --evalue $evalue --query $contigs >> $prefix".card" 
-
-#Run Diamond: vfdb
-echo $dmndHeaders > $prefix".vfdb"
-diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $contigs >> $prefix".vfdb"
+#Run Diamond: card and vfdb
 
 #Run mash: patric
 #TODO: Replace this with a function that loops over possible distance values finding the minimum value
