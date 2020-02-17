@@ -128,6 +128,9 @@ do
 
     #Mash the fasta files versus a sketch of the entire patric genome
     #TODO: replace this step with a function that loops over possible thresholds
+    #TODO: replace this with a python script that calls mash as a subprocess and checks the file
+    #TODO: use MashScreen instead of Mash for the metagenomic samples
+    #TODO: remove bin processing
     mash dist -d $mash_threshold $patricDB $bin | cut -f 1,3,4,5  > tmp_mash.txt
     if [ ! -s "tmp_mash.txt" ]
     then

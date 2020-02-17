@@ -79,6 +79,7 @@ diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $co
 
 #Run mash: patric
 #TODO: Replace this with a function that loops over possible distance values finding the minimum value
+#TODO: Create a python script that calls mash as a subprocees and parse through the file using this script
 mash dist -d $mash_threshold $patricDB $contigs | cut -f 1,3,4,5  > tmp_mash.txt 
 if [ ! -s "tmp_mash.txt" ]
 then
