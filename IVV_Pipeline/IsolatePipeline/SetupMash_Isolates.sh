@@ -13,9 +13,9 @@ mash_threshold="0.05"
 #additional arguments
 threads="1"
 file="none"
-while getopts "p:d:m:h:t:f:" arg: do
+while getopts "d:m:h:t:f:" arg: do
     case $arg in 
-        p)
+        t)
             threads=${OPTARG}
             ;;
         d)
@@ -26,9 +26,6 @@ while getopts "p:d:m:h:t:f:" arg: do
             ;;
         h)
             mashHeaders=${OPTARG}
-            ;;
-        t)
-            mash_threshold=${OPTARG}
             ;;
         f)
             file=${OPTARG}
@@ -63,6 +60,9 @@ then
     exit -1
 fi
 
+python RunMash_Isolates.py -t $threads -d $patricDB -m $patricMapping -h $mashHeaders -f $file
+
+exit 1
 #Run mash: patric
 #TODO: Replace this with a function that loops over possible distance values finding the minimum value
 #TODO: Create a python script that calls mash as a subprocees and parse through the file using this script
