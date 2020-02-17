@@ -13,6 +13,7 @@ mash_threshold="0.05"
 #additional arguments
 threads="1"
 file="none"
+sample="isolate"
 while getopts "d:m:h:t:f:" arg: do
     case $arg in 
         t)
@@ -29,6 +30,8 @@ while getopts "d:m:h:t:f:" arg: do
             ;;
         f)
             file=${OPTARG}
+        s)
+            sample=${OPTARG}
             ;;
         \?)
             echo "Invalid option: -$OPTARG" 1>&2
@@ -60,7 +63,7 @@ then
     exit -1
 fi
 
-python RunMash_Isolates.py -t $threads -d $patricDB -m $patricMapping -h $mashHeaders -f $file
+python RunMash_Isolates.py -t $threads -d $patricDB -m $patricMapping -c $mashHeaders -f $file -s $sample
 
 exit 1
 #Run mash: patric
