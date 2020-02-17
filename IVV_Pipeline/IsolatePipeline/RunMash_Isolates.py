@@ -4,20 +4,19 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-t','--threads')
+parser.add_argument('-t','--threads',default="1")
 parser.add_argument('-d','--database')
-parser.add_argument('-m','--map')
-parser.add_argument('-c','--headers')
 parser.add_argument('-f','--filename')
 parser.add_argument('-s','--sample')
 
 args = parser.parse_args()
 
-outfile = sample+".mash_out.txt"
-errfile = sample+".mash_err.txt"
+outfile = args.sample+".mash_out.txt"
+errfile = args.sample+".mash_err.txt"
 
 #TODO: Mash theshold list implementation
-mash_threshold = 0.0
+#mash_threshold = 0.0
+mash_threshold = 0.01
 
 while not os.path.isfile(outfile) or os.path.getsize(outfile) == 0:
     command = "mash dist -d " + str(mash_threshold) + " -p " + args.threads + " " + args.database + " " + args.filename  
