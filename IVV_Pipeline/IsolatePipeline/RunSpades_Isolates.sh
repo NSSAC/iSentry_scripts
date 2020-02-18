@@ -4,7 +4,7 @@
 threads=1
 file1="none"
 file2="none"
-while getopts "t:f:r:" arg; do
+while getopts "tf:r" arg; do
     case $arg in 
         t)  
             threads=${OPTARG}

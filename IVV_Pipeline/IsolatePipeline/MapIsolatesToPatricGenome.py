@@ -39,7 +39,6 @@ with open(outfile,"w") as o:
     o.write("Genome\tGenomd_ID\tIsolate\tDistance\tP-Value\tShared-Hashes\n")
     for i in range(0,int(args.num_thresholds)):
         threshold = thresholds_sorted[i]
-        print(threshold)
         for data in data_list:
             if float(data[3]) == threshold:
                 o.write("%s\t%s\t%s\t%s\t%s\t%s\n"%(data[0],data[1],data[2],data[3],data[4],data[5]))

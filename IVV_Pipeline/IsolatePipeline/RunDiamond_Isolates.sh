@@ -13,15 +13,15 @@ dmndHeaders="qseqid sseqid  length  evalue  bitscore    stitle"
 #Diamond: evalue threshold
 evalue="0.000001"
 file="none"
-card=0
-vfdb=0
+card="0"
+vfdb="0"
 while getops "cvhei:f:" args: do
     case $arg in 
         c)
-            card=1
+            card="1"
             ;;
         v)
-            vfdbDB=1
+            vfdbDB="1"
             ;;
         h)
             dmndHeaders=${OPTARG}
@@ -58,7 +58,7 @@ fi
 
 #check if databases are specified and run if they exist
 #TODO: Can be rewritten to support a generic database instead of two specific ones
-if [ $cardDB != "none" ]
+if [ $cardDB == "1" ]
 then
     if [ ! -f $cardDB ]
     then
@@ -68,7 +68,7 @@ then
         diamond blastx --outfmt 6 $dmndHeaders --db $cardDB --evalue $evalue --query $file >> $prefix".card"
     fi
 fi
-if [ $vfdb != "none" ] 
+if [ $vfdb == "1" ] 
 then
     if [ ! -f $vfdbDB ]
     then
