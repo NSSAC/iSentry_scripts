@@ -92,6 +92,7 @@ rm -r tmp_dir
 
 #TODO: Run MashScreen on binned files
 
+#TODO: Section below is probably redundant, keep correct and remove incorrect parts
 #loop through and create a report for each bin made by MaxBin
 for bin in $outdir/maxbin.*.fasta;
 do
