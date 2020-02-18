@@ -2,16 +2,7 @@
 module load gcc
 module load diamond
 
-#CHECK REQUIRED PROGRAM PATHS
-check_Checkm=$(which checkm)
-check_kraken=$(which kraken2)
-check_Mash=$(which mash)
-check_Spades=$(which spades.py)
 maxbin="/project/biocomplexity/isentry/src/MaxBin-2.2.7/run_MaxBin.pl"
-check_MaxBin=$(which $maxbin)
-
-#File and Output Paths
-outdir="IVV_Report_Output_all"
 
 #Database paths for Kraken2, Diamond, and Patric (Mash)
 krakenBDB="/project/biocomplexity/isentry/ref_data/kraken2/bacteria"
@@ -28,56 +19,55 @@ mashHeaders="gene-ID   species distance   p-value"
 #mash threshold: Sets maximum distance value for output a mash pair
 mash_threshold="0.25"
 
-#Number of threads
-threads="8"
-
 #Diamond evalue threshold
 evalue="0.000001"
 
-#Check that database files exists
-if [ ! -f $cardDB ] 
-then
-    echo "card-diamond database does not exist:"$cardDB
-    exit 1
-fi
-if [ ! -f $vfdbDB ]
-then
-    echo "vfdb-diamond database does not exist:"$vfdbDB
-    exit 1
-fi
-if [ ! -f $patricDB ]
-then
-    echo "patric-mash database does not exist:"$patricDB
-    exit 1
-fi
-if [ ! -f $patricMapping ]
-then
-    echo "patric-mapping file does not exist:"$patricMapping
-    exit 1
-fi
-if [ ! -d $krakenBDB ]
-then
-    echo "kraken bacterial database does not exist:"$krakenBDB
-    exit 1 
-fi
-if [ ! -d $krakenVDB ]
-then
-    echo "kraken viral database does not exist:"$krakenVDB
-    exit 1 
-fi 
+#Input arguments
+threads="1"
+sample="none"
+outdir="SampleOutput"
+forward="none"
+reverse="none"
+card="0"
+vfdb="0"
+while getopts "tcvs:of:r" arg; do
+    case $arg in
+        t)
+            threads=${OPTARG}
+            ;;
+        c)
+            card="1"
+            ;;
+        v)
+            vfdb="1"
+            ;;
+        s)
+            sample=${OPTARG}
+            ;;
+        o)
+            outdir=${OPTARG}
+            ;;
+        f)
+            forward=${OPTARG}
+            ;;
+        r)
+            reverse=${OPTARG}
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" 1>&2
+            exit -1
+            ;;
+    esac
+done
 
 #Create Output directory if it doesn't exist
 if [ ! -d $outdir ]
 then
     mkdir $outdir
 fi
+cd $outdir
 
-#Paired reads for the raw fastq files
-f1=""
-f2=""
-
-#Prefix for the file
-prefix=""
+sh ../RunSpades_Metagenomic.sh 
 
 #Run kraken on raw fastq input files
 kraken2 --db $krakenBDB --threads $threads --paired $f1 $f2 --output $prefix".bacteria.output" --report $prefix".bacteria.report"
@@ -98,12 +88,6 @@ diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $f1
 #Run Diamond using the VFDB database: f2 reads
 echo $dmndHeaders > $prefix".f2.vfdb"
 diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $f2 >> $prefix".f2.vfdb"
-
-#Assemble Fastq Files using SPAdes, remove all but the assembled contigs file
-#Flag: --meta, indicates that the fastq files were generated from fastq reads
-spades.py --meta -t $threads -1 $f1 -2 $f2 -o tmp_dir 
-mv tmp_dir/contigs.fasta $outdir 
-rm -r tmp_dir
 
 #run MaxBin
 mkdir tmp_dir
