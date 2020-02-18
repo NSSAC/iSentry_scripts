@@ -78,6 +78,7 @@ else
 fi 
 
 #TODO: Include Kraken script
+#TODO: Include Checkm script
 
 #Run Diamond: card and vfdb
 diamond_cmd = "sh ../RunDiamond_Isolates.sh"

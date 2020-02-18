@@ -7,20 +7,14 @@ maxbin="/project/biocomplexity/isentry/src/MaxBin-2.2.7/run_MaxBin.pl"
 #Database paths for Kraken2, Diamond, and Patric (Mash)
 krakenBDB="/project/biocomplexity/isentry/ref_data/kraken2/bacteria"
 krakenVDB="/project/biocomplexity/isentry/ref_data/kraken2/viral"
-cardDB="/project/biocomplexity/isentry/ref_data/card/card_protein_variant_DB.dmnd"
-vfdbDB="/project/biocomplexity/isentry/ref_data/vfdb/VFDB_protein_DB.dmnd"
 patricDB="/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
 patricMapping="/project/biocomplexity/isentry/ref_data/mash/patric_genomes_names.txt"
 
 #Headers for diamond and mash output
-dmndHeaders="qseqid sseqid  length  evalue  bitscore    stitle"
 mashHeaders="gene-ID   species distance   p-value"
 
 #mash threshold: Sets maximum distance value for output a mash pair
 mash_threshold="0.25"
-
-#Diamond evalue threshold
-evalue="0.000001"
 
 #Input arguments
 threads="1"
@@ -60,6 +54,8 @@ while getopts "tcvs:of:r" arg; do
     esac
 done
 
+#TODO: Check for $forward and $sample
+
 #Create Output directory if it doesn't exist
 if [ ! -d $outdir ]
 then
@@ -67,34 +63,34 @@ then
 fi
 cd $outdir
 
-sh ../RunSpades_Metagenomic.sh 
+#Run Spades
+sh ../RunSpades_Metagenomic.sh -f $forward -r $reverse -t $threads
+if [ ! -f tmp_dir/contigs.fasta ]
+then
+    echo "Spades failed for $sample" 1>&2
+    exit -1
+else
+    mv tmp_dir/contigs.fasta .
+    rm -r tmp_dir
+fi
 
-#Run kraken on raw fastq input files
-kraken2 --db $krakenBDB --threads $threads --paired $f1 $f2 --output $prefix".bacteria.output" --report $prefix".bacteria.report"
-kraken2 --db $krakenVDB --threads $threads --paired $f1 $f2 --output $prefix".viral.output" --report $prefix".viral.report"
+#TODO: Run Kraken on contigs file
+#TODO: Run MashScreen on contigs file
+#TODO: Run Diamond on contigs file
+#TODO: Incorporate Checkm script
 
-#Run Diamond using the CARD database: f1 reads
-echo $dmndHeaders > $prefix".f1.card"
-diamond blastx --outfmt 6 $dmndHeaders --db $cardDB --evalue $evalue --query $f1 >> $prefix".f1.card" 
-
-#Run Diamond using the CARD database: f2 reads
-echo $dmndHeaders > $prefix".f2.card"
-diamond blastx --outfmt 6 $dmndHeaders --db $cardDB --evalue $evalue --query $f2 >> $prefix".f2.card"                      
-
-#Run Diamond using the VFDB database: f1 reads
-echo $dmndHeaders > $prefix".f1.vfdb"
-diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $f1 >> $prefix".f1.vfdb"
-
-#Run Diamond using the VFDB database: f2 reads
-echo $dmndHeaders > $prefix".f2.vfdb"
-diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $f2 >> $prefix".f2.vfdb"
-
-#run MaxBin
+#TODO:run MaxBin
 mkdir tmp_dir
 $maxbin -thread $threads -contig $outdir/contigs.fasta -reads $f1 -reads2 $f2 -out tmp_dir/maxbin
 mv tmp_dir/maxbin.*.fasta $outdir
 rm tmp_dir/*
 rm -r tmp_dir
+
+#TODO:Run kraken on binned files
+#kraken2 --db $krakenBDB --threads $threads --paired $f1 $f2 --output $prefix".bacteria.output" --report $prefix".bacteria.report"
+#kraken2 --db $krakenVDB --threads $threads --paired $f1 $f2 --output $prefix".viral.output" --report $prefix".viral.report"
+
+#TODO: Run MashScreen on binned files
 
 #loop through and create a report for each bin made by MaxBin
 for bin in $outdir/maxbin.*.fasta;

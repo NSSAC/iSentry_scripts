@@ -22,10 +22,15 @@ while getopts "tf:r" arg; do
     esac
 done
 
-#Check for reads file
+#Check for reads file and that it exists
 if [ $file1 == "none" ] 
 then
     echo "Must provide at least one reads file: [ -f FILE ]" 1>&2
+    exit -1
+fi
+if [ ! -f $file1 ]
+then
+    echo "$file1 does not exist" 1>&2
     exit -1
 fi
 
@@ -33,6 +38,10 @@ fi
 if [ $file2 == "none" ]
 then
     spades.py -t $threads -f $file1 -o tmp_dir
+elif [ ! -f $file2 ]
+then
+    echo "$file2 does not exist" 1>&2
+    exit -1
 else
     spades.py -t $threads -1 $file1 -2 $file2 -o tmp_dir
 fi
