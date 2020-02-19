@@ -80,7 +80,8 @@ else
     rm -r tmp_dir
 fi 
 
-#TODO: Include Checkm script
+#Run Checkm script on contigs file
+sh "$rel_path"RunCheckm_Isolates.sh
 
 #Run Diamond: card and vfdb
 diamond_cmd = "sh ""$rel_path""RunDiamond_Isolates.sh"
