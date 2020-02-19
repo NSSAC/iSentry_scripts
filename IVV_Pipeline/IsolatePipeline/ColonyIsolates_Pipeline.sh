@@ -105,4 +105,5 @@ fi
 #Run Mash
 sh "$rel_path"SetupMash_Isolates.sh -t $threads -f contigs.fasta -s $sample 
 
-#TODO: Include Kraken script
+#Run Kraken script
+sh "$rel_path"RunKraken.sh -t $threads -f contigs.fasta -i $sample -b -r -g -s
