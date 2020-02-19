@@ -1,5 +1,8 @@
 
-#TODO: Change relative paths for shells and python scripts to absolute paths 
+#Set path for scripts before running
+#Make sure to set the same variable in the SetupMash_Isolates.sh script
+rel_path="/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/IsolatePipeline/"
+
 #Assuming reads files do not need to be processed after assembling into contigs
 
 #LOAD MODULES: gcc MUST be loaded before diamond
@@ -66,7 +69,7 @@ fi
 cd $outdir
 
 #Run Spades
-sh ../RunSpades_Isolates.sh -t $threads -f $forward -r $reverse
+sh "$rel_path"RunSpades_Isolates.sh -t $threads -f $forward -r $reverse
 #check if contigs file exists
 if [ ! -f tmp_dir/contigs.fasta ]
 then
@@ -77,11 +80,10 @@ else
     rm -r tmp_dir
 fi 
 
-#TODO: Include Kraken script
 #TODO: Include Checkm script
 
 #Run Diamond: card and vfdb
-diamond_cmd = "sh ../RunDiamond_Isolates.sh"
+diamond_cmd = "sh ""$rel_path""RunDiamond_Isolates.sh"
 if [ $card == "1" ] 
 then 
     diamond_cmd=$diamond_cmd" -c" 
@@ -100,4 +102,6 @@ else
 fi
 
 #Run Mash
-sh SetupMash_Isolates.sh -t $threads -f contigs.fasta -s $sample 
+sh "$rel_path"SetupMash_Isolates.sh -t $threads -f contigs.fasta -s $sample 
+
+#TODO: Include Kraken script

@@ -1,5 +1,8 @@
 #Run mash dist on isolate samples. Can be reads or isolates
 
+#Also set path
+rel_path="/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/IsolatePipeline/"
+
 #Database paths for Patric (Mash)
 patricDB="/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
 patricMapping="patric_genomes_names.txt"
@@ -59,7 +62,7 @@ then
 fi
 
 #Run Mash Dist on the colony isolate samples
-python RunMash_Isolates.py -t $threads -d $patricDB -f $file -s $sample
+python "$rel_path"RunMash_Isolates.py -t $threads -d $patricDB -f $file -s $sample
 
 #Filter Mash Dist values based on threshold values
-python MapIsolatesToPatricGenome.py -f $sample".mash_out.txt" -m $patricMapping -o $sample".PatricMapping.txt" -n 2
+python "$rel_path"MapIsolatesToPatricGenome.py -f $sample".mash_out.txt" -m $patricMapping -o $sample".PatricMapping.txt" -n 2
