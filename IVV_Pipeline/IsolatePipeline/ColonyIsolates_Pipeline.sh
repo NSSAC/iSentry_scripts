@@ -52,7 +52,7 @@ done
 #check if forward reads are provided, and then if it exists
 if [[ $forward == "none" ]] 
 then
-    echo "At least one reads file must be provided: [[ -f FILE ]]" 1>&2
+    echo "At least one reads file must be provided: [ -f FILE ]" 1>&2
     exit -1
 fi
 if [[ ! -f $forward ]]
@@ -99,8 +99,6 @@ then
     sh "$rel_path"RunDiamond_Isolates.sh -v -f contigs.fasta -s $sample
 fi
 
-exit
-#TODO: Pipeline is working up to this point, have to test these final two scripts
 #Run Mash
 sh "$rel_path"SetupMash_Isolates.sh -t $threads -f contigs.fasta -s $sample 
 

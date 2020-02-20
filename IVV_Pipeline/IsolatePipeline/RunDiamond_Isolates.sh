@@ -49,8 +49,7 @@ then
     echo "$file does not exist: exiting" 1>&2
     exit -1
 fi
-echo $card
-echo $vfdb
+
 #check if databases are specified and run if they exist
 #TODO: Can be rewritten to support a generic database instead of two specific ones
 if [[ $cardDB == "1" ]]
@@ -65,13 +64,10 @@ then
 fi
 if [[ $vfdb == "1" ]] 
 then
-    echo "vfdb is 1"
     if [[ ! -f $vfdbDB ]]
     then
-        echo "there was an issue"
         echo "$vfdbDB does not exist. Not running diamond with vfdb database" 1>&2
     else
-        echo "here in vfdb diamond"
         echo $dmndHeaders > $prefix".vfdb"
         diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $file >> $prefix".vfdb"
     fi
