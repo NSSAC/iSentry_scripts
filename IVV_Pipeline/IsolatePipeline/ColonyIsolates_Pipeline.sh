@@ -19,8 +19,8 @@ vfdb="0"
 outdir="IsolateOutput"
 forward="none"
 reverse="none"
-while getopts "ts:cvof:r" arg; do
-    case $arg in
+while getopts ":t:s:cvo:f:r:" arg; do
+    case ${arg} in
         t)
             threads=${OPTARG}
             ;;
@@ -37,7 +37,7 @@ while getopts "ts:cvof:r" arg; do
             outdir=${OPTARG}
             ;;
         f)
-            forward=${OPTARG}
+            forward=$OPTARG
             ;;
         r)
             reverse=${OPTARG}
@@ -50,28 +50,31 @@ while getopts "ts:cvof:r" arg; do
 done 
 
 #check if forward reads are provided, and then if it exists
-if [ $forward == "none" ] 
+if [[ $forward == "none" ]] 
 then
-    echo "At least one reads file must be provided: [ -f FILE ]" 1>&2
+    echo "At least one reads file must be provided: [[ -f FILE ]]" 1>&2
     exit -1
 fi
-if [ ! -f $forward ]
+if [[ ! -f $forward ]]
 then
     echo "$forward does not exist" 1>&2
     exit -1
 fi
 
 #Create Output directory if it doesn't exist
-if [ ! -d $outdir ]
+if [[ ! -d $outdir ]]
 then
     mkdir $outdir
 fi
 cd $outdir
 
 #Run Spades
-sh "$rel_path"RunSpades_Isolates.sh -t $threads -f $forward -r $reverse
+if [[ ! -f contigs.fasta ]]
+then
+    sh "$rel_path"RunSpades_Isolates.sh -t $threads -f $forward -r $reverse
+fi
 #check if contigs file exists
-if [ ! -f tmp_dir/contigs.fasta ]
+if [[ ! -f tmp_dir/contigs.fasta ]] && [[ ! -f contigs.fasta ]]
 then
     echo "spades failed for isolate $sample" 1>&2
     exit -1
@@ -81,27 +84,23 @@ else
 fi 
 
 #Run Checkm script on contigs file
-sh "$rel_path"RunCheckm_Isolates.sh
+if [[ ! -f checkm_results.txt ]]
+then
+    sh "$rel_path"RunCheckm_Isolates.sh
+fi
 
 #Run Diamond: card and vfdb
-diamond_cmd = "sh ""$rel_path""RunDiamond_Isolates.sh"
-if [ $card == "1" ] 
+if [[ $card == "1" ]] 
 then 
-    diamond_cmd=$diamond_cmd" -c" 
+    sh "$rel_path"RunDiamond_Isolates.sh -c -f contigs.fasta -s $sample
 fi
-if [ $vfdb == "1" ]
+if [[ $vfdb == "1" ]]
 then
-    diamond_cmd=$diamond_cmd" -v" 
-fi
-if [ $card == "0" ] && [ $vfdb == "0" ]
-then
-    echo "Diamond against both card and vfdb has been turned off" 1>&2
-else
-    diamond_cmd=$diamond_cmd" -i "$sample" -f contigs.fasta" 
-    eval $diamond_cmd
-    #sh RunDiamond_Isolates.sh -c -v -i $sample -f $forward
+    sh "$rel_path"RunDiamond_Isolates.sh -v -f contigs.fasta -s $sample
 fi
 
+exit
+#TODO: Pipeline is working up to this point, have to test these final two scripts
 #Run Mash
 sh "$rel_path"SetupMash_Isolates.sh -t $threads -f contigs.fasta -s $sample 
 

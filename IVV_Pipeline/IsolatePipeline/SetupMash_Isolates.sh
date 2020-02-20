@@ -5,7 +5,7 @@ rel_path="/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/IsolatePipeline/"
 
 #Database paths for Patric (Mash)
 patricDB="/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
-patricMapping="patric_genomes_names.txt"
+patricMapping="$rel_path""patric_genomes_names.txt"
 
 #Headers for diamond and mash output
 mashHeaders="gene-ID    species  distance   p-value shared-hashes"
@@ -14,7 +14,7 @@ mashHeaders="gene-ID    species  distance   p-value shared-hashes"
 threads="1"
 file="none"
 sample="isolate"
-while getopts "dmtf:s:" arg: do
+while getopts "d:m:t:f:s:" arg; do
     case $arg in 
         t)
             threads=${OPTARG}
@@ -38,24 +38,24 @@ while getopts "dmtf:s:" arg: do
 done
 
 #Check that file is specified and exists
-if [ $file == "none" ]
+if [[ $file == "none" ]]
 then
-    echo "Error: pass in a reads file [ -f FILE ]" 1>&2
+    echo "Error: pass in a reads file [[ -f FILE ]]" 1>&2
     exit -1
 fi
-if [ ! -f $file ]
+if [[ ! -f $file ]]
 then
     echo "Error: $file does not exist" 1>&2
     exit -1
 fi
 
 #Check that database files exists
-if [ ! -f $patricDB ]
+if [[ ! -f $patricDB ]]
 then
     echo "patric-mash database does not exist:$patricDB" 1>&2
     exit -1
 fi
-if [ ! -f $patricMapping ]
+if [[ ! -f $patricMapping ]]
 then
     echo "patric-mapping file does not exist:$patricMapping" 1>&2
     exit -1
