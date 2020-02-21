@@ -7,16 +7,16 @@ vfdbDB="/project/biocomplexity/isentry/ref_data/vfdb/VFDB_protein_DB.dmnd"
 #Diamond headers
 dmndHeaders="qseqid sseqid  length  evalue  bitscore    stitle"
 
-#Default prefix for files
-prefix="isolate"
+#Default isolate for files
+isolate="isolate"
 
 #Diamond evalue threshold
 evalue="0.000001"
 file="none"
 card="0"
 vfdb="0"
-while getops "cvhei:f:" args: do
-    case $arg in 
+while getops "cvh:e:s:f:" args; do
+    case $args in 
         c)
             card="1"
             ;;
@@ -30,7 +30,7 @@ while getops "cvhei:f:" args: do
             evalue=${OPTARG}
             ;;
         i)
-            prefix=${OPTARG}
+            isolate=${OPTARG}
             ;;
         f)
             file=${OPTARG}
@@ -64,8 +64,8 @@ then
     then
         echo "$cardDB does not exist. Not running diamond with card database" 1>&2
     else
-        echo $dmndHeaders > $prefix".card"
-        diamond blastx --outfmt 6 $dmndHeaders --db $cardDB --evalue $evalue --query $file >> $prefix".card"
+        echo $dmndHeaders > $isolate".card"
+        diamond blastx --outfmt 6 $dmndHeaders --db $cardDB --evalue $evalue --query $file >> $isolate".card"
     fi
 fi
 if [ $vfdb == "1" ] 
@@ -74,7 +74,7 @@ then
     then
         echo "$vfdbDB does not exist. Not running diamond with vfdb database" 1>&2
     else
-        echo $dmndHeaders > $prefix".vfdb"
-        diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $file >> $prefix".vfdb"
+        echo $dmndHeaders > $isolate".vfdb"
+        diamond blastx --outfmt 6 $dmndHeaders --db $vfdbDB --evalue $evalue --query $file >> $isolate".vfdb"
     fi
 fi

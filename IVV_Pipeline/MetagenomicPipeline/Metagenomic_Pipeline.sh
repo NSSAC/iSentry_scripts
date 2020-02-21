@@ -4,9 +4,17 @@ module load diamond
 
 maxbin="/project/biocomplexity/isentry/src/MaxBin-2.2.7/run_MaxBin.pl"
 
+#add absolute path to run files
+abs_path="/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/MetagenomicPipeline/"
+
+#Flags for skipping parts of the pipeline
+runSpades="1"
+runKraken="1"
+runMashScreen="1"
+runDiamond="1"
+runCheckm="1"
+
 #Database paths for Kraken2, Diamond, and Patric (Mash)
-krakenBDB="/project/biocomplexity/isentry/ref_data/kraken2/bacteria"
-krakenVDB="/project/biocomplexity/isentry/ref_data/kraken2/viral"
 patricDB="/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
 patricMapping="/project/biocomplexity/isentry/ref_data/mash/patric_genomes_names.txt"
 
@@ -14,6 +22,7 @@ patricMapping="/project/biocomplexity/isentry/ref_data/mash/patric_genomes_names
 mashHeaders="gene-ID   species distance   p-value"
 
 #mash threshold: Sets maximum distance value for output a mash pair
+#TODO: change, probably unnecessary
 mash_threshold="0.25"
 
 #Input arguments
@@ -24,7 +33,7 @@ forward="none"
 reverse="none"
 card="0"
 vfdb="0"
-while getopts "tcvs:of:r" arg; do
+while getopts ":t:cvs:o:f:r:" arg; do
     case $arg in
         t)
             threads=${OPTARG}
@@ -54,30 +63,72 @@ while getopts "tcvs:of:r" arg; do
     esac
 done
 
-#TODO: Check for $forward and $sample
+#Check that reads file is provided and exists
+if [[ $forward == "none" ]]
+then
+    echo "Provide a reads file: [ -f FILE ]" 1>&2
+    exit -1
+fi
+if [[ ! -f $forward ]]
+then
+    echo "$forward does not exist" 1>&2
+    exit -1
+fi
 
 #Create Output directory if it doesn't exist
-if [ ! -d $outdir ]
+if [[ ! -d $outdir ]]
 then
     mkdir $outdir
 fi
 cd $outdir
 
 #Run Spades
-sh ../RunSpades_Metagenomic.sh -f $forward -r $reverse -t $threads
-if [ ! -f tmp_dir/contigs.fasta ]
+if [[ "$runSpades" == "1" ]]
 then
-    echo "Spades failed for $sample" 1>&2
+    sh "$abs_path"RunSpades_Metagenomic.sh -f $forward -r $reverse -t $threads
+fi
+if [[ ! -f tmp_dir/contigs.fasta ]] && [[ ! -f contigs.fasta  ]]
+then
+    echo "Spades failed for $forward" 1>&2
     exit -1
+elif [[ -f contigs.fasta  ]] 
+    echo "Spades has already been run, contigs.fasta exists" 1>&2
+then
 else
     mv tmp_dir/contigs.fasta .
     rm -r tmp_dir
 fi
 
-#TODO: Run Kraken on contigs file
-#TODO: Run MashScreen on contigs file
-#TODO: Run Diamond on contigs file
-#TODO: Incorporate Checkm script
+#Run Kraken on contigs file
+if [[ "$runKraken" == "1" ]]
+then
+    sh "$abs_path"RunKraken.sh -t $threads -b -r -g -s -f contigs.fasta -i $sample   
+fi
+
+#Run MashScreen on contigs file
+if [[ "$runMashScreen" == "1" ]]
+then
+    sh "$abs_path"SetupMash_Screen.sh -t $threads -f contigs.fasta -s $sample 
+fi
+
+#Run Diamond on contigs file
+if [[ "$runDiamond" == "1" ]] 
+then
+    if [[ "$card" == "1" ]]
+    then
+        sh "$abs_path"RunDiamond_Metagenomic.sh -c -f contigs.fasta -s $sample
+    fi
+    if [[ "$vfdb" == "1" ]]
+    then
+        sh "$abs_path"RunDiamond_Metagenomic.sh -v -f contigs.fasta -s $sample
+    fi
+fi
+
+#Incorporate Checkm script
+if [[ "$runCheckm" == "1" ]] 
+then
+    sh RunCheckm.sh
+fi
 
 #TODO:run MaxBin
 mkdir tmp_dir
@@ -87,8 +138,6 @@ rm tmp_dir/*
 rm -r tmp_dir
 
 #TODO:Run kraken on binned files
-#kraken2 --db $krakenBDB --threads $threads --paired $f1 $f2 --output $prefix".bacteria.output" --report $prefix".bacteria.report"
-#kraken2 --db $krakenVDB --threads $threads --paired $f1 $f2 --output $prefix".viral.output" --report $prefix".viral.report"
 
 #TODO: Run MashScreen on binned files
 
@@ -113,7 +162,7 @@ do
     #TODO: use MashScreen instead of Mash for the metagenomic samples
     #TODO: remove bin processing
     mash dist -d $mash_threshold $patricDB $bin | cut -f 1,3,4,5  > tmp_mash.txt
-    if [ ! -s "tmp_mash.txt" ]
+    if [[ ! -s "tmp_mash.txt" ]]
     then
         echo "Mash from $bin at threshold $mash_threshold is empty"
     else
