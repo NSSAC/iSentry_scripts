@@ -15,7 +15,7 @@ evalue="0.000001"
 file="none"
 card="0"
 vfdb="0"
-while getops "cvh:e:s:f:" args; do
+while getopts "cvh:e:s:f:" args; do
     case $args in 
         c)
             card="1"

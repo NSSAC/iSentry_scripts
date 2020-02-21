@@ -92,8 +92,8 @@ then
     echo "Spades failed for $forward" 1>&2
     exit -1
 elif [[ -f contigs.fasta  ]] 
-    echo "Spades has already been run, contigs.fasta exists" 1>&2
 then
+    echo "Spades has already been run, contigs.fasta exists" 1>&2
 else
     mv tmp_dir/contigs.fasta .
     rm -r tmp_dir
@@ -131,6 +131,7 @@ then
 fi
 
 #run MaxBin
+#TODO: MaxBin finished with errors, start here
 if [[ "$runMaxbin" == "1" ]]
 then
     sample_bin=$sample"_Bins"
