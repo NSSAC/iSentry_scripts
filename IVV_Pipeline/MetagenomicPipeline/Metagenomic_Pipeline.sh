@@ -2,8 +2,6 @@
 module load gcc
 module load diamond
 
-maxbin="/project/biocomplexity/isentry/src/MaxBin-2.2.7/run_MaxBin.pl"
-
 #add absolute path to run files
 abs_path="/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/MetagenomicPipeline/"
 
@@ -13,6 +11,7 @@ runKraken="1"
 runMashScreen="1"
 runDiamond="1"
 runCheckm="1"
+runMaxbin="1"
 
 #Database paths for Kraken2, Diamond, and Patric (Mash)
 patricDB="/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
@@ -130,12 +129,12 @@ then
     sh RunCheckm.sh
 fi
 
-#TODO:run MaxBin
-mkdir tmp_dir
-$maxbin -thread $threads -contig $outdir/contigs.fasta -reads $f1 -reads2 $f2 -out tmp_dir/maxbin
-mv tmp_dir/maxbin.*.fasta $outdir
-rm tmp_dir/*
-rm -r tmp_dir
+#run MaxBin
+if [[ "$runMaxbin" == "1" ]]
+then
+    sample_bin=$sample"_Bins"
+    sh "$abs_path"RunMaxbin.sh -t $threads -c contigs.fasta -f $forward -r $reverse -o $sample_bin -s $sample
+fi
 
 #TODO:Run kraken on binned files
 
