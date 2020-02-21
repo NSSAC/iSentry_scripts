@@ -5,13 +5,14 @@ module load diamond
 #add absolute path to run files
 abs_path="/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/MetagenomicPipeline/"
 
-#Flags for skipping parts of the pipeline
+#Boolean flags for skipping parts of the pipeline: run == "1", skip == "0"
 runSpades="1"
 runKraken="1"
 runMashScreen="1"
 runDiamond="1"
 runCheckm="1"
 runMaxbin="1"
+processBins="1"
 
 #Database paths for Kraken2, Diamond, and Patric (Mash)
 patricDB="/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
@@ -136,7 +137,17 @@ then
     sh "$abs_path"RunMaxbin.sh -t $threads -c contigs.fasta -f $forward -r $reverse -o $sample_bin -s $sample
 fi
 
+#Iterate over binned files and make an output directory for each of them
+if [[ "$processBins" = "1" ]]
+then
+    for bin in `ls ${sample_bin}/$sample.*.fasta`;
+    do
+       echo $bin  
+    done
+fi
+exit
 #TODO:Run kraken on binned files
+
 
 #TODO: Run MashScreen on binned files
 
