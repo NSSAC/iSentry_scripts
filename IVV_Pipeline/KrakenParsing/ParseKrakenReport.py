@@ -13,9 +13,12 @@ with open(args.report,"r") as r:
         info = [s.rstrip() for s in line]
         if info[rank_index] == "G":
             if len(info) > 6:
-                print(line)
-                info[5] == info[5] + " " + info[6]
+                info[5] = info[5] + " " + info[6] 
                 list.pop(info)
+            info[0] = float(info[0])
+            info = tuple(info)
             genus_list.append(info)
 
-#print(genus_list)
+genus_list_sorted = sorted(genus_list,key = lambda x: x[0],reverse=True)
+
+
