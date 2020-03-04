@@ -3,6 +3,7 @@ import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-r','--report')
+parser.add_argument('-o','--output')
 
 args = parser.parse_args()
 rank_index = 3
@@ -21,4 +22,6 @@ with open(args.report,"r") as r:
 
 genus_list_sorted = sorted(genus_list,key = lambda x: x[0],reverse=True)
 
-
+with open(args.output,"w") as o:
+    for data in genus_list_sorted:
+        o.write("%s\t%s\n"%(str(data[0]),"\t".join(data[1:])))
