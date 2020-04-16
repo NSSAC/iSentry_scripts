@@ -65,4 +65,4 @@ fi
 python "$rel_path"RunMash_Isolates.py -t $threads -d $patricDB -f $file -s $sample
 
 #Filter Mash Dist values based on threshold values
-python "$rel_path"MapIsolatesToPatricGenome.py -f $sample".mash_out.txt" -m $patricMapping -o $sample".PatricMapping.txt" -n 2
+python "$rel_path"MapIsolatesToPatricGenome.py -f $sample".mash_dist.out" -m $patricMapping -o $sample".PatricMapping.txt" -n 2

@@ -59,5 +59,5 @@ then
 else
     $maxbin -thread $threads -contig $contigs -reads $forward -reads2 $reverse -out tmp_dir/$sample
 fi
-mv tmp_dir/$sample.*.fasta $outdir
+mv tmp_dir/${sample}.*.fasta $outdir
 rm -r tmp_dir

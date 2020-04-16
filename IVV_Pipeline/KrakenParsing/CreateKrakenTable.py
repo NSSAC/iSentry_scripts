@@ -1,12 +1,16 @@
 import glob
+import argparse
 
-path = "*/*GenusOutput.txt"
+parser = argparse.ArgumentParser()
+parser.add_argument('-p','--path')
+parser.add_argument('-o','--outfile')
+
+args = parser.parse_args()
 
 data_list = []
 
-for genus_file in glob.glob(path):
+for genus_file in glob.glob(args.path):
     isolate = genus_file.split("/")[0]
-    isolate = isolate.split("_")[1]
     with open(genus_file,"r") as gf:
         for line in gf:
             line = line.rstrip().split()
@@ -17,8 +21,7 @@ for genus_file in glob.glob(path):
                 line.append(isolate)
                 data_list.append(line)
 
-outfile = "IVV_August2019_16s_Genus_Table.txt"
-with open(outfile,"w") as o:
+with open(args.outfile,"w") as o:
     o.write("Isolate\tMapped_Pct\tReads_Covered\tReads_Assigned\tRank\tTaxon_ID\tGenus\n")
     for data in data_list:
         o.write("%s\t%s\n"%(data[-1],"\t".join(data[:len(data)-1])))
