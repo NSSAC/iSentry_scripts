@@ -5,7 +5,7 @@ rel_path="/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/IsolatePipeline/"
 
 #Database paths for Patric (Mash)
 patricDB="/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
-patricMapping="$rel_path""patric_genomes_names.txt"
+patricMapping="$rel_path""old_patric_genomes_names.txt"
 
 #Headers for diamond and mash output
 mashHeaders="gene-ID    species  distance   p-value shared-hashes"

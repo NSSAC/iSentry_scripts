@@ -27,17 +27,25 @@ with open(infile,"r") as f:
         line = line.rstrip().split()
         genome_id = line[0].split("/")[-2]
         if genome_id in patric_dict:
+            #print(line)
             data = (patric_dict[genome_id],genome_id,line[1],line[2],line[3],line[4])
             if float(line[2]) not in threshold_list:
                 threshold_list.append(float(line[2]))
             data_list.append(data)
+
+#check threshold list: empty if nothing in mash file
+if len(threshold_list) == 0:
+    print("%s is empty: exiting"%args.mashfile)
+    sys.exit(-1)
 
 #Output info based on sorted values
 thresholds_sorted = sorted(threshold_list)
 outfile = args.outfile
 with open(outfile,"w") as o:
     o.write("Genome\tGenomd_ID\tIsolate\tDistance\tP-Value\tShared-Hashes\n")
-    for i in range(0,int(args.num_thresholds)):
+    for i in range(int(args.num_thresholds)):
+        if len(thresholds_sorted) == i:
+            break
         threshold = thresholds_sorted[i]
         for data in data_list:
             if float(data[3]) == threshold:

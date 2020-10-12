@@ -11,6 +11,7 @@ parser.add_argument('-r','--reads',help="either one read or comma separated read
 parser.add_argument('-o','--outdir',default="Contigs")
 parser.add_argument('-s','--spades_output',default="tmp_spades")
 parser.add_argument('-p','--prefix',required=True)
+parser.add_argument('-m',"--metagenomic")
 
 args = parser.parse_args()
 
@@ -27,6 +28,8 @@ first_run = True
 while not os.path.exists(contigs_file): 
     if first_run:
         spades_cmd = ["spades.py"]+reads_params+["-t",args.threads,"-o",args.spades_output]
+        if args.metagenomic:
+            spades_cmd.insert(1,"--meta")
         first_run = False
         subprocess.check_call(spades_cmd)
     else: #assumes spades failed, check for existence of the kmer directories
@@ -45,6 +48,8 @@ while not os.path.exists(contigs_file):
         last_kmer = "k"+kmers_sorted[-1]
         kmer_param = ",".join(kmers_sorted)
         spades_cmd = ["spades.py","-k",kmer_param,"--restart-from",last_kmer,"-o",args.spades_output]
+        if args.metagenomic:
+            spades_cmd.insert(1,"--meta")
         subprocess.check_call(spades_cmd)
 #move contigs file to output file with prefix name 
 if os.path.exists(contigs_file):

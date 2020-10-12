@@ -17,11 +17,11 @@ errfile = args.sample+".mash_screen.err"
 p_val_threshold = 0.05
 
 #Construct Mash Screen command from input arguments
-command = "mash screen -w -p " + args.threads + " -v " + str(p_val_threshold) + " " + args.database + " " + args.filename  
+command = ["mash","screen","-w","-p",args.threads,"-v",str(p_val_threshold),args.database,args.filename]  
 
 #Open output file and error file for writing and run Mash Screen
 with open(outfile,"w") as out, open(errfile,"w") as err:
-    process = subprocess.Popen(command,shell=True,stdout=out,stderr=err)
+    process = subprocess.check_call(command,stdout=out,stderr=err)
     process.wait()
 
 #Check if a problem occurred and the run failed

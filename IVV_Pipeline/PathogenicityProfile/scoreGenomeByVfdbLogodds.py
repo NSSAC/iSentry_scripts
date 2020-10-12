@@ -5,7 +5,7 @@ import re
 Then read multiple blastx files for multiple genomes, summing logodds for each matching VF (second space-separated field of 6th tab-seqarated field)
 Write out filename and score
 """
-reference_log_odds_file = "ffvf_means_logodds.txt"
+reference_log_odds_file = "/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/PathogenicityProfile/ffvf_means_logodds.txt"
 lodata={}
 F = open(reference_log_odds_file)
 F.readline() # header

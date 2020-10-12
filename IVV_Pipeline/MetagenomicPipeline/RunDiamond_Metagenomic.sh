@@ -21,7 +21,7 @@ while getopts "cvh:e:s:f:" args; do
             card="1"
             ;;
         v)
-            vfdbDB="1"
+            vfdb="1"
             ;;
         h)
             dmndHeaders=${OPTARG}
@@ -41,7 +41,6 @@ while getopts "cvh:e:s:f:" args; do
             ;;
     esac
 done
-
 #check if file was specified
 if [ $file == "none" ]
 then
