@@ -1,9 +1,6 @@
-import sys
-import subprocess
-import argparse
-import os
-import shutil
-import glob
+#!/home/cc8dm/miniconda3/bin/python
+
+import sys,subprocess,argparse,os,shutil,glob
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-t','--threads',default="1")
@@ -11,7 +8,7 @@ parser.add_argument('-r','--reads',help="either one read or comma separated read
 parser.add_argument('-o','--outdir',default="Contigs")
 parser.add_argument('-s','--spades_output',default="tmp_spades")
 parser.add_argument('-p','--prefix',required=True)
-parser.add_argument('-m',"--metagenomic")
+parser.add_argument('-m',"--metagenomic",action="store_true")
 
 args = parser.parse_args()
 
@@ -31,6 +28,7 @@ while not os.path.exists(contigs_file):
         if args.metagenomic:
             spades_cmd.insert(1,"--meta")
         first_run = False
+        print(spades_cmd)
         subprocess.check_call(spades_cmd)
     else: #assumes spades failed, check for existence of the kmer directories
         kmer_path = os.path.join(args.spades_output,"k*")
@@ -50,11 +48,14 @@ while not os.path.exists(contigs_file):
         spades_cmd = ["spades.py","-k",kmer_param,"--restart-from",last_kmer,"-o",args.spades_output]
         if args.metagenomic:
             spades_cmd.insert(1,"--meta")
+        print(spades_cmd)
         subprocess.check_call(spades_cmd)
 #move contigs file to output file with prefix name 
 if os.path.exists(contigs_file):
     contigs_output = os.path.join(args.outdir,args.prefix+".fa")
     py_v3 = 0x30000f0
+    print(contigs_file)
+    print(contigs_output)
     if sys.hexversion < py_v3: #python version 2
         os.rename(contigs_file,contigs_output)
     else: #python version 3
@@ -63,3 +64,5 @@ if os.path.exists(contigs_file):
         shutil.rmtree(args.spades_output)
     else:
         print("error in moving output file")
+else:
+    print("contigs.fasta does not exist")

@@ -1,3 +1,5 @@
+#!/home/cc8dm/miniconda3/bin/python
+
 import sys, subprocess, argparse, os, shutil, glob
 
 parser = argparse.ArgumentParser()
@@ -10,9 +12,8 @@ parser.add_argument("-p","--prefix",required=True)
 args = parser.parse_args()
 
 #add "/" to spades_dir if not present
-spades_path = "/scratch/cc8dm/iSentry_scripts/IVV_Pipeline/SPAdes/RunSpades.py"
-spades_cmd = [spades_path,"-m","-t",args.threads,"-r",args.r1+","+args.r2,"-o",args.spades_dir]
+spades_cmd = ["RunSpades.py","-m","-t",args.threads,"-r",args.read1+","+args.read2,"-o",args.spades_dir,"-p",args.prefix]
 spades_log_out = args.spades_dir+"log.stdout"
 spades_log_err = args.spades_dir+"log.stderr"
-with open(spades_log_out,"w") as slo and open(spades_log_err,"w") as sle:
+with open(spades_log_out,"w") as slo, open(spades_log_err,"w") as sle:
     subprocess.check_call(spades_cmd,stdout=slo,stderr=sle)

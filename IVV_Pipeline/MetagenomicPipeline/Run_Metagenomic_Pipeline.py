@@ -1,3 +1,5 @@
+#!/home/cc8dm/miniconda3/bin/python
+
 import os,shutil,subprocess,sys,argparse,time
 
 parser = argparse.ArgumentParser()
@@ -8,6 +10,7 @@ parser.add_argument("-o","--outdir",default="./")
 parser.add_argument("-p","--prefix",required=True)
 
 args = parser.parse_args()
+print(args)
 
 #Mash database and id mapping
 patricDB = "/project/biocomplexity/isentry/ref_data/mash/patric_all.msh"
@@ -39,17 +42,36 @@ for program in time_programs:
 
 #RunSpades_Metagenomic.sh
 spades_dir = args.prefix+"_spades"
-os.mkdir(spades_dir)
-time_dict["Spades"]["Start"] = time.time()
-subprocess.check_call(["python","RunSpades_Metagenomic.py","-t",args.threads,"-r1",args.r1,"-r2",args.r2,"-s",spades_dir,"-p",args.prefix])
-time_dict["Spades"]["End"] = time.time()
+if not os.path.isdir(spades_dir):
+    os.mkdir(spades_dir)
+#os.mkdir(spades_dir)
+contig_file = os.path.join(spades_dir,args.prefix+".fa")
+if not os.path.exists(contig_file):
+    time_dict["Spades"]["Start"] = time.time()
+    subprocess.check_call(["RunSpades_Metagenomic.py","-t",args.threads,"-r1",args.read1,"-r2",args.read2,"-s",spades_dir,"-p",args.prefix])
+    time_dict["Spades"]["End"] = time.time()
+else:
+    print("contigs file exists: skipping spades assembly")
+    time_dict["Spades"]["Start"] = "NA"
+    time_dict["Spades"]["End"] = "NA"
 #Check for existence of contigs file
-contig_file = os.path.join(spades_dir,"contigs.fasta")
-if not os.path.exits(contig_file):
+if not os.path.exists(contig_file):
     sys.stderr.write("Contigs file doesn't exist for sample %s\n"%args.prefix)
+    sys.exit()
 
 #Run Kraken on contigs
+if False:
+    kraken_log_stdout = "kraken.stdout"
+    kraken_log_stderr = "kraken.stderr"
+    time_dict["Kraken"]["Contigs"]["Start"] = time.time()
+    with open(kraken_log_stdout,"w") as klo, open(kraken_log_stderr,"w") as kle:
+        subprocess.check_call(["RunKraken.py","-t",args.threads,"-p",args.prefix,"-r",contig_file],stdout=klo,stderr=kle)
+    time_dict["Kraken"]["Contigs"]["End"] = time.time()
+else:
+    print("Skipping Kraken")
+
 #Run Mash on contigs
+
 #Run Diamond on contigs
 
 #Run maxbin
