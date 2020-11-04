@@ -1,3 +1,5 @@
+#!/home/cc8dm/miniconda3/bin/python
+
 import sys
 import subprocess
 import argparse
@@ -20,9 +22,10 @@ p_val_threshold = 0.05
 command = ["mash","screen","-w","-p",args.threads,"-v",str(p_val_threshold),args.database,args.filename]  
 
 #Open output file and error file for writing and run Mash Screen
+print(" ".join(command))
 with open(outfile,"w") as out, open(errfile,"w") as err:
     process = subprocess.check_call(command,stdout=out,stderr=err)
-    process.wait()
+    #process.wait()
 
 #Check if a problem occurred and the run failed
 if not os.path.exists(outfile) or os.path.getsize(outfile) == 0: 
